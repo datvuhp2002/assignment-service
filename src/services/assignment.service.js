@@ -13,7 +13,10 @@ class AssignmentService {
     assignment_id: true,
     user_property_id: true,
     project_property_id: true,
-    task_id: true,
+    task_property_id: true,
+    startAt: true,
+    endAt: true,
+    status: true,
     createdBy: true,
     createdAt: true,
   };
@@ -55,17 +58,30 @@ class AssignmentService {
   };
 
   // get all assignment instances
-  static getAllStaffFromProject = async (project_property_id) => {
+  static getAllUserPropertyFromProject = async (project_property_id) => {
     const listOfAssignment = await this.listOfAssignmentFromProject(
       project_property_id
     );
     if (listOfAssignment) {
-      const userPropertyIds = listOfAssignment.assignments.map(
-        (assignment) => assignment.user_property_id
-      );
-      const listUser = await getUserByUserPropertyIds(userPropertyIds);
-      if (listUser) return listUser;
-      return null;
+      const userPropertyIds = listOfAssignment.assignments
+        .map((assignment) => assignment.user_property_id)
+        .filter((id) => id !== null);
+      const uniqueUserPropertyIds = [...new Set(userPropertyIds)];
+      return uniqueUserPropertyIds;
+    }
+    return null;
+  };
+  static getAllTaskPropertyFromProject = async (project_property_id) => {
+    const listOfAssignment = await this.listOfAssignmentFromProject(
+      project_property_id
+    );
+    console.log(listOfAssignment);
+    if (listOfAssignment.assignments) {
+      const taskPropertyIds = listOfAssignment.assignments
+        .map((assignment) => assignment.task_property_id)
+        .filter((id) => id !== null);
+      const uniqueTaskPropertyIds = [...new Set(taskPropertyIds)];
+      return uniqueTaskPropertyIds;
     }
     return null;
   };
@@ -78,7 +94,7 @@ class AssignmentService {
     ];
     return await this.queryAssignment({
       query: query,
-      getAll: true,
+      items_per_page: "ALL",
     });
   };
   // get all assignment had been deleted
@@ -133,7 +149,6 @@ class AssignmentService {
     page,
     nextPage,
     previousPage,
-    getAll,
   }) => {
     let whereClause = {};
     if (query && query.length > 0) {
@@ -142,8 +157,12 @@ class AssignmentService {
     const total = await prisma.assignment.count({
       where: whereClause,
     });
-    let itemsPerPage = Number(items_per_page) || 10;
-    if (getAll) itemsPerPage = total;
+    let itemsPerPage;
+    if (items_per_page !== "ALL") {
+      itemsPerPage = Number(items_per_page) || 10;
+    } else {
+      itemsPerPage = total;
+    }
     const currentPage = Number(page) || 1;
     const skip = currentPage > 1 ? (currentPage - 1) * itemsPerPage : 0;
     const assignments = await prisma.assignment.findMany({

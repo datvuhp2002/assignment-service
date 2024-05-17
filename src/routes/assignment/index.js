@@ -8,8 +8,12 @@ const router = express.Router();
 router.get("/getAll", asyncHandler(AssignmentController.getAll));
 // get all staff from project
 router.get(
-  "/getAllStaffFromProject/:id",
-  asyncHandler(AssignmentController.getAllStaffFromProject)
+  "/getAllUserPropertyFromProject/:id",
+  asyncHandler(AssignmentController.getAllUserPropertyFromProject)
+);
+router.get(
+  "/getAllTaskPropertyFromProject/:id",
+  asyncHandler(AssignmentController.getAllTaskPropertyFromProject)
 );
 router.delete(
   "/removeStaffFromProject/:id",

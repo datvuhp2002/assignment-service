@@ -21,15 +21,25 @@ class AssignmentController {
       data: await AssignmentService.getAll(req.query),
     }).send(res);
   };
-  getAllStaffFromProject = async (req, res, next) => {
+  getAllUserPropertyFromProject = async (req, res, next) => {
     new SuccessResponse({
-      message: "Lấy tất cả nhân viên trong phòng ban thành công",
-      data: await AssignmentService.getAllStaffFromProject(req.params.id),
+      message: "Lấy tất cả thuộc tính nhân viên trong dự án thành công",
+      data: await AssignmentService.getAllUserPropertyFromProject(
+        req.params.id
+      ),
+    }).send(res);
+  };
+  getAllTaskPropertyFromProject = async (req, res, next) => {
+    new SuccessResponse({
+      message: "Lấy tất cả thuộc tính nhiệm vụ trong dự án thành công",
+      data: await AssignmentService.getAllTaskPropertyFromProject(
+        req.params.id
+      ),
     }).send(res);
   };
   removeStaffFromProject = async (req, res, next) => {
     new SuccessResponse({
-      message: "Xoá nhân viên trong phòng ban thành công",
+      message: "Xoá nhân viên trong dự án thành công",
       data: await AssignmentService.removeStaffFromProject(
         req.params.id,
         req.body.ids
